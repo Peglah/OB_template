@@ -3,6 +3,9 @@
   Trying to bring Organization Blocks to the Arduino.
   Compatible with Uno and Mega.
 
+  Cyclic Interrupts are handled by TimerOne
+  https://github.com/PaulStoffregen/TimerOne
+
   Features:
   Organization Block for Cyclic Program Processing (OB1)
   Cyclic Interrupt Organization Block (OB30-OB38)
@@ -13,6 +16,7 @@
 
 // ********** SETUP - NO NEED TO CHANGE **********
 #include <Arduino.h>
+#include <TimerOne.h>
 
 #define CHANGE 1
 #define FALLING 2
@@ -75,122 +79,133 @@ const int OB45_mode = CHANGE;
 
 // ********** Organization Blocks **********
 
-void OB1() {
-  // Organization Block for Cyclic Program Processing
+void OB1() { // Organization Block for Cyclic Program Processing
 
 }
 
-void OB30() {
-  // Cyclic Interrupt Organization Block 5000ms
+void OB30() { // Cyclic Interrupt Organization Block 5000ms
 
 }
 
-void OB31() {
-    // Cyclic Interrupt Organization Block 2000ms
+void OB31() { // Cyclic Interrupt Organization Block 2000ms
 
 }
 
-void OB32() {
-    // Cyclic Interrupt Organization Block 1000ms
+void OB32() { // Cyclic Interrupt Organization Block 1000ms
 
 }
 
-void OB33() {
-    // Cyclic Interrupt Organization Block 500ms
+void OB33() { // Cyclic Interrupt Organization Block 500ms
 
 }
 
-void OB34() {
-    // Cyclic Interrupt Organization Block 200ms
+void OB34() { // Cyclic Interrupt Organization Block 200ms
 
 }
 
-void OB35() {
-    // Cyclic Interrupt Organization Block 100ms
+void OB35() { // Cyclic Interrupt Organization Block 100ms
 
 }
 
-void OB36() {
-    // Cyclic Interrupt Organization Block 50ms
+void OB36() { // Cyclic Interrupt Organization Block 50ms
 
 }
 
-void OB37() {
-    // Cyclic Interrupt Organization Block 20ms
+void OB37() { // Cyclic Interrupt Organization Block 20ms
 
 }
 
-void OB38() {
-    // Cyclic Interrupt Organization Block 10ms
+void OB38() { // Cyclic Interrupt Organization Block 10ms
 
 }
 
-void OB40() {
-    // Hardware Interrupt Organization Block
+void OB40() { // Hardware Interrupt Organization Block
 
 }
 
-void OB41() {
-    // Hardware Interrupt Organization Block
+void OB41() { // Hardware Interrupt Organization Block
 
 }
 
-void OB42() {
-    // Hardware Interrupt Organization Block
+void OB42() { // Hardware Interrupt Organization Block
 
 }
 
-void OB43() {
-    // Hardware Interrupt Organization Block
+void OB43() { // Hardware Interrupt Organization Block
 
 }
 
-void OB44() {
-    // Hardware Interrupt Organization Block
+void OB44() { // Hardware Interrupt Organization Block
 
 }
 
-void OB45() {
-    // Hardware Interrupt Organization Block
+void OB45() { // Hardware Interrupt Organization Block
 
 }
 
-void OB100() {
-  // Startup Organization Block
+void OB100() { // Startup Organization Block
 
 }
 
 // ********** ARDUINO SETUP - NO NEED TO CHANGE **********
 
+void OB_main() {
+    if (millis() - OB38_previousMillis >= OB38_interval) { OB38_previousMillis = millis(); OB38(); }
+    if (millis() - OB37_previousMillis >= OB37_interval) { OB37_previousMillis = millis(); OB37(); }
+    if (millis() - OB36_previousMillis >= OB36_interval) { OB36_previousMillis = millis(); OB36(); }
+    if (millis() - OB35_previousMillis >= OB35_interval) { OB35_previousMillis = millis(); OB35(); }
+    if (millis() - OB34_previousMillis >= OB34_interval) { OB34_previousMillis = millis(); OB34(); }
+    if (millis() - OB33_previousMillis >= OB33_interval) { OB33_previousMillis = millis(); OB33(); }
+    if (millis() - OB32_previousMillis >= OB32_interval) { OB32_previousMillis = millis(); OB32(); }
+    if (millis() - OB31_previousMillis >= OB31_interval) { OB31_previousMillis = millis(); OB31(); }
+    if (millis() - OB30_previousMillis >= OB30_interval) { OB30_previousMillis = millis(); OB30(); }
+}
+
 void setup() {
-  Serial.begin(115200);
+    Serial.begin(115200);
 
-  #if defined(__AVR_ATmega328P__) || defined(__AVR_ATmega2560__)
-  if (OB40_interruptEnable) { pinMode(OB40_interruptPin, INPUT_PULLUP); attachInterrupt(digitalPinToInterrupt(OB40_interruptPin), OB40, OB40_mode); }
-  if (OB41_interruptEnable) { pinMode(OB41_interruptPin, INPUT_PULLUP); attachInterrupt(digitalPinToInterrupt(OB41_interruptPin), OB41, OB41_mode); }
-  #endif
+    Timer1.initialize(1000); // Time in microseconds. 1000 = check for cyclic interrupts every 1ms.
+    Timer1.attachInterrupt(OB_main);
 
-  #if defined(__AVR_ATmega2560__)
-  if (OB42_interruptEnable) { pinMode(OB42_interruptPin, INPUT_PULLUP); attachInterrupt(digitalPinToInterrupt(OB42_interruptPin), OB42, OB42_mode); }
-  if (OB43_interruptEnable) { pinMode(OB43_interruptPin, INPUT_PULLUP); attachInterrupt(digitalPinToInterrupt(OB43_interruptPin), OB43, OB43_mode); }
-  if (OB44_interruptEnable) { pinMode(OB44_interruptPin, INPUT_PULLUP); attachInterrupt(digitalPinToInterrupt(OB44_interruptPin), OB44, OB44_mode); }
-  if (OB45_interruptEnable) { pinMode(OB45_interruptPin, INPUT_PULLUP); attachInterrupt(digitalPinToInterrupt(OB45_interruptPin), OB45, OB45_mode); }
-  #endif
-  
-  OB100();
+    #if defined(__AVR_ATmega328P__) || defined(__AVR_ATmega2560__)
+    if (OB40_interruptEnable) {
+        pinMode(OB40_interruptPin, INPUT_PULLUP);
+        attachInterrupt(digitalPinToInterrupt(OB40_interruptPin), OB40, OB40_mode);
+    }
+
+    if (OB41_interruptEnable) {
+        pinMode(OB41_interruptPin, INPUT_PULLUP);
+        attachInterrupt(digitalPinToInterrupt(OB41_interruptPin), OB41, OB41_mode);
+    }
+    #endif
+
+    #if defined(__AVR_ATmega2560__)
+    if (OB42_interruptEnable) {
+        pinMode(OB42_interruptPin, INPUT_PULLUP);
+        attachInterrupt(digitalPinToInterrupt(OB42_interruptPin), OB42, OB42_mode);
+    }
+
+    if (OB43_interruptEnable) {
+        pinMode(OB43_interruptPin, INPUT_PULLUP);
+        attachInterrupt(digitalPinToInterrupt(OB43_interruptPin), OB43, OB43_mode);
+    }
+    
+    if (OB44_interruptEnable) {
+        pinMode(OB44_interruptPin, INPUT_PULLUP);
+        attachInterrupt(digitalPinToInterrupt(OB44_interruptPin), OB44, OB44_mode);
+    }
+    
+    if (OB45_interruptEnable) {
+        pinMode(OB45_interruptPin, INPUT_PULLUP);
+        attachInterrupt(digitalPinToInterrupt(OB45_interruptPin), OB45, OB45_mode);
+    }
+    #endif
+
+    OB100();
 }
 
 // ********** ARDUINO LOOP - NO NEED TO CHANGE **********
 
 void loop() {
-  OB1();
-  if (millis() - OB30_previousMillis >= OB30_interval) { OB30_previousMillis = millis(); OB30(); }
-  if (millis() - OB31_previousMillis >= OB31_interval) { OB31_previousMillis = millis(); OB31(); }
-  if (millis() - OB32_previousMillis >= OB32_interval) { OB32_previousMillis = millis(); OB32(); }
-  if (millis() - OB33_previousMillis >= OB33_interval) { OB33_previousMillis = millis(); OB33(); }
-  if (millis() - OB34_previousMillis >= OB34_interval) { OB34_previousMillis = millis(); OB34(); }
-  if (millis() - OB35_previousMillis >= OB35_interval) { OB35_previousMillis = millis(); OB35(); }
-  if (millis() - OB36_previousMillis >= OB36_interval) { OB36_previousMillis = millis(); OB36(); }
-  if (millis() - OB37_previousMillis >= OB37_interval) { OB37_previousMillis = millis(); OB37(); }
-  if (millis() - OB38_previousMillis >= OB38_interval) { OB38_previousMillis = millis(); OB38(); }
+    OB1();
 }
